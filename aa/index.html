@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FundsWeb Feature Update Example</title>
+    
+    <style>
+        /* General Body/Layout Styles (Example) */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 50px;
+            background-color: #f4f7f9;
+        }
+
+        /* --- 1. SIP Calculator Styles --- */
+        .financial-calculator {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 25px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+        }
+
+        .financial-calculator h3 {
+            color: #1e3a8a; /* Deep blue for finance */
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .financial-calculator label {
+            display: block;
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .financial-calculator input {
+            display: block;
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .financial-calculator button {
+            background-color: #007bff; /* Primary action blue */
+            color: white;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .financial-calculator button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #e0e0e0;
+        }
+        
+        .results p {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+
+        .results span {
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+        
+        #futureValue {
+            color: #047857; /* Dark green for positive result */
+            font-size: 1.2em;
+        }
+
+        /* --- 2. Floating Live Chat Button Styles --- */
+        .live-chat-button {
+            /* Positioning */
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            
+            /* Appearance */
+            background-color: #28a745; /* Green for support/action */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px; /* Pill shape */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 17px;
+            z-index: 1000; /* Ensures it's above everything else */
+            
+            /* Animation for better user experience */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .live-chat-button:hover {
+            background-color: #1e7e34;
+            transform: scale(1.05);
+        }
+
+        .live-chat-button .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to FundsWeb 🚀</h1>
+    <p>This is a demonstration of the two new key features:</p>
+
+    <div class="financial-calculator">
+        <h3>SIP Return Estimator 💰</h3>
+        
+        <label for="monthlyInvestment">Monthly Investment (₹):</label>
+        <input type="number" id="monthlyInvestment" value="5000">
+        
+        <label for="investmentPeriod">Time Period (Years):</label>
+        <input type="number" id="investmentPeriod" value="10">
+        
+        <label for="expectedRate">Expected Annual Return (%):</label>
+        <input type="number" id="expectedRate" value="12">
+        
+        <button onclick="calculateSIP()">Calculate</button>
+        
+        <div class="results">
+            <p>Invested Amount: <span id="investedAmount">₹ 0</span></p>
+            <p>Estimated Future Value: <span id="futureValue">₹ 0</span></p>
+        </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 50px;">Scroll down to see the floating chat button!</p>
+    
+    <div style="height: 1000px;"></div>
+
+
+    <a href="https://your-live-chat-service-link.com" 
+       class="live-chat-button" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       title="Talk to an Advisor">
+        <span class="icon">💬</span> 
+        Live Chat
+    </a>
+    
+
+    <script>
+        function calculateSIP() {
+            // Get input values
+            const P = parseFloat(document.getElementById('monthlyInvestment').value);
+            const t = parseFloat(document.getElementById('investmentPeriod').value);
+            const r = parseFloat(document.getElementById('expectedRate').value) / 100;
+
+            if (isNaN(P) || isNaN(t) || isNaN(r) || P <= 0 || t <= 0 || r <= 0) {
+                document.getElementById('investedAmount').textContent = 'Invalid Input';
+                document.getElementById('futureValue').textContent = 'Invalid Input';
+                return;
+            }
+
+            // Convert annual rate and time to monthly
+            const n = 12; // number of times interest is compounded per year (monthly)
+            const i = r / n; // monthly rate
+            const N = t * n; // total number of payments
+
+            // SIP Future Value Formula: FV = P * [((1 + i)^N - 1) / i] * (1 + i)
+            const futureValue = P * ((Math.pow(1 + i, N) - 1) / i) * (1 + i);
+            const investedAmount = P * N;
+
+            // Display results (formatted to Indian Rupees for clarity)
+            const formatter = new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0
+            });
+
+            document.getElementById('investedAmount').textContent = formatter.format(investedAmount);
+            document.getElementById('futureValue').textContent = formatter.format(futureValue);
+        }
+
+        // Initial call to set default values on load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateSIP();
+        });
+    </script>
+
+</body>
+</html>
+
+
+
